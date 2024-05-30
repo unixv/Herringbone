@@ -7,6 +7,7 @@ LABEL Tool="UDP Receiver"
 EXPOSE 7002
 
 WORKDIR /herringbone/receiver
+
 COPY . .
 
 RUN pip3 install -r requirements.txt

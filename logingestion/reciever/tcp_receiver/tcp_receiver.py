@@ -25,7 +25,7 @@ def create_connection():
 	"""Quick function to create mongo connection objects.
 	"""
 
-	client = pymongo.MongoClient("mongodb://"+ HOST +":27017/")
+	client = pymongo.MongoClient("mongodb://"+ MONGO_DB +"/")
 	db = client["herringbone"]
 	collection = db["logs"]
 	return client, db, collection
