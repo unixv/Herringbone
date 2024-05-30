@@ -89,7 +89,7 @@ if __name__ == "__main__":
 	while(True):
 		data, address = udp_receiver.recvfrom(1024)
 		logsource = address
-		logbody = data.decode('ascii')
+		logbody = data.decode('utf-8')
 		logtype = "Unidentified"
 
 		"""
@@ -106,8 +106,8 @@ if __name__ == "__main__":
 				print("Identifying log...")
 				tcp_sender = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 				tcp_sender.connect((IDENTIFIER_HOST, IDENTIFIER_PORT))
-				tcp_sender.sendall(bytes(json.dumps(to_identify), "ascii"))
-				logtype = tcp_sender.recv(1024).decode("ascii")
+				tcp_sender.sendall(bytes(json.dumps(to_identify), "utf-8"))
+				logtype = tcp_sender.recv(1024).decode("utf-8")
 				tcp_sender.close()
 
 		except Exception as e:

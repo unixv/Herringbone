@@ -39,16 +39,18 @@ def identify(logbody):
 		if predicted_type != correct_type:
 			print(f"Updating model with correct log type: {correct_type}")
 			loaded_model = learning.retrain_model([logbody["body"]], [correct_type], loaded_model)
+			updated_predicted_type = learning.predict_log_type(logbody["body"], loaded_model)
+			print(f"The updated predicted log type is: {updated_predicted_type}")
+			predicted_type = updated_predicted_type
 
-		updated_predicted_type = learning.predict_log_type(logbody["body"], loaded_model)
-		print(f"The updated predicted log type is: {updated_predicted_type}")
+	return predicted_type
 
 while(True):
 	connection, address = tcp_receiver.accept()
-	logbody = connection.recv(1024).decode("ascii")
+	logbody = connection.recv(1024).decode("utf-8")
 	print(f"Identifying new log fromv {address}")
 	try:
-		connection.sendall(bytes(identify(json.loads(logbody)), "ascii"))
+		connection.sendall(bytes(identify(json.loads(logbody)), "utf-8"))
 	except Exception as e:
 		print(f"Identifier failed: {e}")
 
