@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8/python-311:1-56.1712880527
 
 LABEL Project="Herringbone"
-LABEL Version="A-1.0.1"
+LABEL Version="A-2.1.1"
 LABEL Tool="UDP Receiver"
 
 EXPOSE 7002

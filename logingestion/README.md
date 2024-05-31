@@ -1,7 +1,6 @@
 # Herringbone Log Ingestion
 
-Essentially the most bare-bones yet effective foundation for SIEM. The **TCP and UDP receivers** collect anything 
-that lands on them and forwards them to any additional services for analysis. Learn how to use these tools below.
+Essentially the most bare-bones yet effective foundation for SIEM. The **TCP and UDP receivers** collect anything that lands on them and forwards them to any additional services for analysis. Learn how to use these tools below.
 
 #### TCP Receiver
 
