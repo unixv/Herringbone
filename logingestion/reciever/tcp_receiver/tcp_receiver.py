@@ -87,9 +87,9 @@ if __name__ == "__main__":
 	print(f"TCP receiver running...with identifier set to {IDENTIFIER}...and MongoDB set to {MONGO_DB}")
 
 	while(True):
-		data, address = tcp_receiver.recvfrom(1024)
+		connection, address = tcp_receiver.accept()
 		logsource = address
-		logbody = data.decode('utf-8')
+		logbody = connection.recv(1024).decode('utf-8')
 		logtype = "Unidentified"
 		
 		"""

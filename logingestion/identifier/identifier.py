@@ -10,7 +10,10 @@ import socket
 import json
 import os
 
-# Constant server variables
+"""
+Server Bind Settings: If you change the PORT, ensure that the same port is exposed in the 
+Dockerfile when building a new identifier container.
+"""
 PORT = 7000
 HOSTNAME = socket.gethostname()
 HOST = socket.gethostbyname(HOSTNAME)
@@ -26,7 +29,8 @@ tcp_receiver.listen(MAX_CONNECTIONS)
 print(f"Identifier is listening on {HOST}:{PORT}")
 
 def identify(logbody):
-	"""This is where the logic should go to identify raw event log formats.
+	"""
+	This is where the logic should go to identify raw event log formats.
 	"""
 
 	loaded_model = learning.load_model()
