@@ -76,7 +76,7 @@ def get_last_id():
 Server Bind Settings: If you change the PORT, ensure that the same port is exposed in the 
 Dockerfile when building a new tcp_receiver container.
 """
-PORT = 7002
+PORT = 7001
 HOSTNAME = socket.gethostname()
 HOST = socket.gethostbyname(HOSTNAME)
 
