@@ -8,3 +8,4 @@ The tool's log receivers support both TCP and UDP protocols, ensuring robust and
 
 This modular design not only simplifies deployment and management but also enables easy expansion and integration of additional features as needed. Ideal for organizations of all sizes, Herringbone Log Ingestion provides a powerful, adaptable solution for comprehensive security monitoring and incident response.
 
+![events](https://github.com/unixv/Herringbone/assets/58447354/689f1ab2-3788-4c98-a787-c598c6d61135)
