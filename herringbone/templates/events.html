@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            font-size: 12px; /* Smaller font size */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('home') }}" class="menu-item">Home</a>
+        <a href="#" class="menu-item" onclick="toggleSubMenu(this)">Log Ingestion</a>
+        <div class="submenu">
+            <a href="{{ url_for('events') }}">Events</a>
+        </div>
+    </div>
+    <div class="content" id="content">
+        <h1>Events</h1>
+        <table id="eventsTable">
+            <thead>
+                <tr>
+                    <th>Source Address</th>
+                    <th>Source Port</th>
+                    <th>Message</th>
+                    <th>Type</th>
+                    <th>Indicators</th>
+                    <th>Log ID</th>
+                </tr>
+            </thead>
+            <tbody id="eventsTableBody">
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.source_address }}</td>
+                    <td>{{ event.source_port }}</td>
+                    <td>{{ event.message }}</td>
+                    <td>{{ event.type }}</td>
+                    <td>
+                        <ul>
+                            {% for key, value in event.indicators.items() %}
+                            <li>{{ key }}: {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ event.logid }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#eventsTable').DataTable();
+
+            setInterval(fetchEvents, 5000); // Fetch events every 5 seconds
+        });
+
+        function fetchEvents() {
+            fetch('/api/events')
+                .then(response => response.json())
+                .then(data => {
+                    const table = $('#eventsTable').DataTable();
+                    table.clear().draw(); // Clear existing data
+
+                    data.forEach(event => {
+                        table.row.add([
+                            event.source_address,
+                            event.source_port,
+                            event.message,
+                            event.type,
+                            '<ul>' + Object.entries(event.indicators).map(([key, value]) => `<li>${key}: ${value}</li>`).join('') + '</ul>',
+                            event.logid
+                        ]).draw(false); // Add new data
+                    });
+                })
+                .catch(error => console.error('Error fetching events:', error));
+        }
+
+        function toggleSubMenu(element) {
+            document.querySelectorAll('.submenu').forEach(submenu => {
+                submenu.style.display = 'none';
+            });
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const submenu = element.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                element.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+</html>
