@@ -4,7 +4,9 @@ LABEL Project="Herringbone"
 LABEL Version="A-2.1.1"
 LABEL Tool="UDP Receiver"
 
-EXPOSE 7002
+EXPOSE 7002/udp
+
+USER root
 
 WORKDIR /herringbone/receiver
 

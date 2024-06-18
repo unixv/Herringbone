@@ -83,13 +83,19 @@ def get_last_id():
 
 	return last_log["logid"]
 
+if MONGO_DB is not None:
+
+	client, db, collection = create_connection()
+	
+	if "Herringbone" in client.list_database_names():
+		LOG_ID = get_last_id()
+
 """
 Server Bind Settings: If you change the PORT, ensure that the same port is exposed in the 
 Dockerfile when building a new udp_receiver container.
 """
 PORT = 7002
-HOSTNAME = socket.gethostname()
-HOST = socket.gethostbyname(HOSTNAME)
+HOST = '0.0.0.0'
 
 if __name__ == "__main__":
 	print(f"Binding to {HOST}:{PORT}")
