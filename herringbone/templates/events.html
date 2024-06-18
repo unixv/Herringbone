@@ -38,7 +38,7 @@
     </div>
     <div class="content" id="content">
         <h1>Events</h1>
-        <table id="eventsTable">
+        <table id="eventsTable" class="display">
             <thead>
                 <tr>
                     <th>Source Address</th>
@@ -49,24 +49,6 @@
                     <th>Log ID</th>
                 </tr>
             </thead>
-            <tbody id="eventsTableBody">
-                {% for event in events %}
-                <tr>
-                    <td>{{ event.source_address }}</td>
-                    <td>{{ event.source_port }}</td>
-                    <td>{{ event.message }}</td>
-                    <td>{{ event.type }}</td>
-                    <td>
-                        <ul>
-                            {% for key, value in event.indicators.items() %}
-                            <li>{{ key }}: {{ value }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>{{ event.logid }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
         </table>
     </div>
 
@@ -76,31 +58,33 @@
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#eventsTable').DataTable();
-
-            setInterval(fetchEvents, 5000); // Fetch events every 5 seconds
+            $('#eventsTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ url_for('api_events') }}",
+                    "type": "GET"
+                },
+                "columns": [
+                    { "data": "source_address" },
+                    { "data": "source_port" },
+                    { "data": "message" },
+                    { "data": "type" },
+                    {
+                        "data": "indicators",
+                        "render": function(data, type, row) {
+                            let indicatorsHtml = '<ul>';
+                            for (const [key, value] of Object.entries(data)) {
+                                indicatorsHtml += `<li>${key}: ${value}</li>`;
+                            }
+                            indicatorsHtml += '</ul>';
+                            return indicatorsHtml;
+                        }
+                    },
+                    { "data": "logid" }
+                ]
+            });
         });
-
-        function fetchEvents() {
-            fetch('/api/events')
-                .then(response => response.json())
-                .then(data => {
-                    const table = $('#eventsTable').DataTable();
-                    table.clear().draw(); // Clear existing data
-
-                    data.forEach(event => {
-                        table.row.add([
-                            event.source_address,
-                            event.source_port,
-                            event.message,
-                            event.type,
-                            '<ul>' + Object.entries(event.indicators).map(([key, value]) => `<li>${key}: ${value}</li>`).join('') + '</ul>',
-                            event.logid
-                        ]).draw(false); // Add new data
-                    });
-                })
-                .catch(error => console.error('Error fetching events:', error));
-        }
 
         function toggleSubMenu(element) {
             document.querySelectorAll('.submenu').forEach(submenu => {
