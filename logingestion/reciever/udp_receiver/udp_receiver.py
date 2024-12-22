@@ -2,12 +2,7 @@ import socket
 import json
 import pymongo
 import os
-
-"""
-By default, the LOG_ID is set to 0. However, if the receiver connects to a MongoDB instance 
-with existing records, it will automatically update to the logid of the latest record.
-"""
-LOG_ID = 0
+import pprint
 
 """
 Set the SOURCE_TYPE_DICT to hard code log types. When using an identifier, the machine learning 
@@ -19,7 +14,7 @@ def reload_source_type_dict():
 	Reload the dictionary from the source_type_dict.json file
 	"""
 
-	return json.load(open("source_type_dict.json", "r"))
+	return json.load(open("/herringbone/config/source_type_dict.json", "r"))
 
 SOURCE_TYPE_DICT = reload_source_type_dict()
 
@@ -69,26 +64,6 @@ def insert_log(logdata):
 	client, db, collection = create_connection()
 	collection.insert_one(logdata)
 
-def get_last_id():
-	"""
-	Gets the last log id in the collection.
-	"""
-
-	client, db, collection = create_connection()
-
-	last_log = db.docs.find_one(
-	  {'doc_id': doc_id},
-	  sort=[( '_id', pymongo.DESCENDING )]
-	)
-
-	return last_log["logid"]
-
-if MONGO_DB is not None:
-
-	client, db, collection = create_connection()
-	
-	if "Herringbone" in client.list_database_names():
-		LOG_ID = get_last_id()
 
 """
 Server Bind Settings: If you change the PORT, ensure that the same port is exposed in the 
@@ -116,6 +91,8 @@ if __name__ == "__main__":
 		try:
 			if IDENTIFIER:
 				to_identify = {"body":logbody}
+				reload_source_type_dict()
+				print(SOURCE_TYPE_DICT)
 				if address[0] in list(SOURCE_TYPE_DICT.keys()):
 					correct_type = SOURCE_TYPE_DICT[address[0]]
 					print(f"Will train identifier with correct type: {correct_type} for {address[0]}")
@@ -127,6 +104,8 @@ if __name__ == "__main__":
 				tcp_sender.sendall(bytes(json.dumps(to_identify), "utf-8"))
 				logtype = tcp_sender.recv(1024).decode("utf-8")
 				tcp_sender.close()
+			else:
+				print("No identifier set...")
 
 		except Exception as e:
 			print(f"Identifier failed: {e}")
@@ -135,14 +114,16 @@ if __name__ == "__main__":
 		Parse the log using the parser if not set to None.
 		"""
 		try:
-			if IDENTIFIER:
+			if PARSER:
 				print("Parsing log...")
 				tcp_sender = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 				tcp_sender.connect((PARSER_HOST, PARSER_PORT))
-				tcp_sender.sendall(bytes(json.dumps(logbody), "utf-8"))
+				tcp_sender.sendall(bytes(json.dumps({"data":logbody,"logtype":logtype}), "utf-8"))
 				indicators = json.loads(tcp_sender.recv(1024).decode("utf-8"))
 				print(indicators)
 				tcp_sender.close()
+			else:
+				print("No parser set...")
 
 		except Exception as e:
 			print(f"Parser failed: {e}")
@@ -155,8 +136,7 @@ if __name__ == "__main__":
 			"source_port": logsource[1],
 			"message": logbody,
 			"type": logtype,
-			"indicators": indicators,
-			"logid": LOG_ID
+			"indicators": indicators
 		}
 
 		"""
@@ -165,9 +145,10 @@ if __name__ == "__main__":
 		try:
 			if MONGO_DB:
 				insert_log(logdata)
+			else:
+				print("No mongo db set...")
 		except Exception as e:
 			print(f"MongoDB insert failed: {e}")
 
 		print(logdata)
-		LOG_ID += 1
 	
