@@ -52,9 +52,10 @@ def identify(logbody):
 while(True):
 	connection, address = tcp_receiver.accept()
 	logbody = connection.recv(1024).decode("utf-8")
-	print(f"Identifying new log fromv {address}")
+	print(f"Identifying new log from {address}")
 	try:
 		connection.sendall(bytes(identify(json.loads(logbody)), "utf-8"))
 	except Exception as e:
 		print(f"Identifier failed: {e}")
+		connection.sendall(bytes("Unidentified", "utf-8"))
 
