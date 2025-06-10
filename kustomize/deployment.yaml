@@ -24,8 +24,24 @@ spec:
               name: udp-port
               protocol: UDP
           env:
-            - name: RECEIVER_TYPE
-              value: "UDP"
+          - name: RECEIVER_TYPE
+            value: "UDP"
+          - name: MONGO_HOST
+            value: "mongodb://mongo-service.herringbone.svc.cluster.local:27017"
+          - name: DB_NAME
+            value: "herringbone_db"
+          - name: COLLECTION_NAME
+            value: "udp_logs"
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: username
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+              name: mongo-secret
+              key: password
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -53,5 +69,21 @@ spec:
               name: udp-port
               protocol: TCP
           env:
-            - name: RECEIVER_TYPE
-              value: "HTTP"
+          - name: RECEIVER_TYPE
+            value: "HTTP"
+          - name: MONGO_HOST
+            value: "mongodb://mongo-service.herringbone.svc.cluster.local:27017"
+          - name: DB_NAME
+            value: "herringbone_db"
+          - name: COLLECTION_NAME
+            value: "http_logs"
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: username
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+              name: mongo-secret
+              key: password
