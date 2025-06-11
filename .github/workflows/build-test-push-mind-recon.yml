@@ -1,4 +1,4 @@
-name: Build, Test, and Push Docker Image (Mind Recon)
+name: (Mind Recon) Build, Test, and Push Image
 
 on:
   workflow_dispatch:  # Trigger manually from GitHub UI
