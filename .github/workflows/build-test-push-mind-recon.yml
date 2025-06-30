@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # Trigger manually from GitHub UI
   push:
     branches:
-      - beta-1.0           # Or test branch if preferred
+      - none           # Or test branch if preferred
     paths:
       - 'mind/recon/**'
 
